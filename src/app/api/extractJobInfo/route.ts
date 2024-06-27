@@ -1,24 +1,52 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
-import puppeteer from 'puppeteer';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const fetchJobDescription = async (url: string) => {
-  const browser = await puppeteer.launch({ headless: true });
-  const page = await browser.newPage();
+const fetchJobDescription = async (url: string): Promise<string> => {
+  let browser;
+
+  if (process.env.NODE_ENV === 'production') {
+    const chromium = require('@sparticuz/chromium-min');
+    const puppeteerCore = require('puppeteer-core');
+
+    browser = puppeteerCore.launch({
+      args: [...chromium.args, '--hide-scrollbars', '--disable-web-security'],
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(
+        `https://github.com/Sparticuz/chromium/releases/download/v123.0.1/chromium-v123.0.1-pack.tar`
+      ),
+      headless: chromium.headless,
+      ignoreHTTPSErrors: true,
+    });
+  } else {
+    const puppeteer = require('puppeteer');
+
+    browser = await puppeteer.launch({
+      args: ['--hide-scrollbars', '--disable-web-security'],
+      headless: true,
+      ignoreHTTPSErrors: true,
+    });
+  }
 
   try {
+    const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'networkidle0' });
-    const bodyText = await page.evaluate(() => document.body.innerText.trim());
+
+    const bodyText = (await page.evaluate(() => {
+      return document.body.innerText.trim();
+    })) as string;
+
     return bodyText;
   } catch (error) {
     console.error('Error fetching job description:', error);
     throw error;
   } finally {
-    await browser.close();
+    if (browser) {
+      await browser.close();
+    }
   }
 };
 

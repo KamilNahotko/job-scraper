@@ -12,7 +12,7 @@ const fetchJobDescription = async (url: string): Promise<string> => {
     const chromium = require('@sparticuz/chromium-min');
     const puppeteerCore = require('puppeteer-core');
 
-    browser = puppeteerCore.launch({
+    browser = await puppeteerCore.launch({
       args: [...chromium.args, '--hide-scrollbars', '--disable-web-security'],
       defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath(
@@ -35,9 +35,9 @@ const fetchJobDescription = async (url: string): Promise<string> => {
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'networkidle0' });
 
-    const bodyText = (await page.evaluate(() => {
+    const bodyText = await page.evaluate(() => {
       return document.body.innerText.trim();
-    })) as string;
+    });
 
     return bodyText;
   } catch (error) {

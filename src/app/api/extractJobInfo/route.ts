@@ -69,7 +69,17 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return new NextResponse(chatCompletion.choices[0].message.content, {
+    if (
+      !chatCompletion ||
+      !chatCompletion.choices ||
+      chatCompletion.choices.length === 0
+    ) {
+      throw new Error('No valid response from OpenAI API');
+    }
+
+    const responseContent = chatCompletion.choices[0].message.content;
+
+    return new NextResponse(responseContent, {
       status: 200,
     });
   } catch (error) {

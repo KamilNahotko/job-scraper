@@ -31,8 +31,6 @@ export default function Home() {
     const data: Omit<addJobOfferInput, 'link' | 'userId'> = await res.json();
 
     if (user?.id) {
-      console.log('run');
-
       addJobOfferMutate({ ...data, link: input, userId: user.id });
     }
   };

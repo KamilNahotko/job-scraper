@@ -6,20 +6,27 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export async function POST(request: NextRequest) {
-  const { message } = await request.json();
+const fetchJobDescription = async (url: string) => {
+  const browser = await puppeteer.launch({ headless: true });
+  const page = await browser.newPage();
 
   try {
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-
-    await page.goto(message);
-
-    const bodyText = await page.evaluate(() => {
-      return document.body.innerText;
-    });
-
+    await page.goto(url, { waitUntil: 'networkidle0' });
+    const bodyText = await page.evaluate(() => document.body.innerText.trim());
+    return bodyText;
+  } catch (error) {
+    console.error('Error fetching job description:', error);
+    throw error;
+  } finally {
     await browser.close();
+  }
+};
+
+export async function POST(request: NextRequest) {
+  const { url } = await request.json();
+
+  try {
+    const bodyText = await fetchJobDescription(url);
 
     const prompt = `
     Please analyze the following job description text and extract the key information. Format the extracted data into a JavaScript JSON Object with the following structure:

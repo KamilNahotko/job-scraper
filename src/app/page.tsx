@@ -25,7 +25,7 @@ export default function Home() {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ message: input }),
+      body: JSON.stringify({ url: input }),
     });
 
     const data: Omit<addJobOfferInput, 'link' | 'userId'> = await res.json();

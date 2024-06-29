@@ -15,10 +15,10 @@ export const useFirebaseAuth = () => {
 
   useEffect(() => {
     const setToken = async () => {
-      try {
-        setIsError(false);
-        setIsLoading(true);
+      setIsError(false);
+      setIsLoading(true);
 
+      try {
         const token = await getToken({ template: 'integration_firebase' });
         if (!token) throw new Error('Failed to fetch token');
 
@@ -26,7 +26,7 @@ export const useFirebaseAuth = () => {
 
         setUserData(userCredentials);
       } catch (error) {
-        console.log('error', error);
+        console.error('Error during Firebase authentication:', error);
         setIsError(true);
       } finally {
         setIsLoading(false);
@@ -34,7 +34,7 @@ export const useFirebaseAuth = () => {
     };
 
     setToken();
-  }, []);
+  }, [getToken, setUserData]);
 
   return { isLoading, isError };
 };

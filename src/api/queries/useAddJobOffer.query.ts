@@ -1,4 +1,4 @@
-import { db } from '@/src/api';
+import { db } from '@/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { DocumentData, addDoc, collection } from 'firebase/firestore';
 

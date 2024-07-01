@@ -1,8 +1,8 @@
 import { db } from '@/api';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { MutationOptions, useMutation } from '@tanstack/react-query';
 import { DocumentData, addDoc, collection } from 'firebase/firestore';
 
-export interface addJobOfferInput {
+export interface IAddJobOfferInput {
   userId: string;
   link: string;
 
@@ -18,7 +18,9 @@ export interface addJobOfferInput {
   techStack?: string[];
 }
 
-const addJobOffer = async (data: addJobOfferInput): Promise<DocumentData> => {
+const postAddJobOffer = async (
+  data: IAddJobOfferInput
+): Promise<DocumentData> => {
   const { userId, title, link, salary, requirements, techStack } = data;
 
   const docRef = await addDoc(collection(db, 'users', data.userId, 'jobs'), {
@@ -40,15 +42,17 @@ const addJobOffer = async (data: addJobOfferInput): Promise<DocumentData> => {
   return docRef;
 };
 
-export const useAddJobOfferQuery = () => {
-  const queryClient = useQueryClient();
+interface IMutationPostAddJobOfferArgs {
+  options?: MutationOptions<DocumentData, Error, IAddJobOfferInput>;
+}
 
-  return useMutation({
-    mutationFn: (data: addJobOfferInput) => addJobOffer(data),
-    onSuccess: () => {
-      queryClient.setQueryData(['jobOffers'], () => {
-        return [];
-      });
-    },
+export const useMutationPostAddJobOffer = (
+  args?: IMutationPostAddJobOfferArgs
+) => {
+  const { options } = args ?? {};
+
+  return useMutation<DocumentData, Error, IAddJobOfferInput>({
+    mutationFn: (data: IAddJobOfferInput) => postAddJobOffer(data),
+    ...options,
   });
 };

@@ -18,7 +18,7 @@ import { cn } from '@/lib/utils';
 
 export default function SignUpPage() {
   return (
-    <div className='grid w-full grow items-center px-4 sm:justify-center'>
+    <div className='grid w-full grow items-center px-4 sm:justify-center place-items-center h-screen'>
       <SignUp.Root>
         <Clerk.Loading>
           {(isGlobalLoading) => (

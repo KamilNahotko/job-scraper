@@ -1,15 +1,28 @@
 import { db } from '@/api';
-import { MutationOptions, useMutation } from '@tanstack/react-query';
+import {
+  MutationOptions,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
+import dayjs from 'dayjs';
 import { DocumentData, addDoc, collection } from 'firebase/firestore';
 
 export interface IAddJobOfferInput {
   userId: string;
   link: string;
-
   title?: string;
+  experience?: string;
+  operatingMode?: string;
+  typeOfWork?: string;
   salary?: {
-    grossPerMonthPermanent: number;
-    netPerMonthB2B: number;
+    grossPerMonthPermanent: {
+      min: number;
+      max: number;
+    };
+    netPerMonthB2B: {
+      min: number;
+      max: number;
+    };
   };
   requirements?: {
     essentialSkills: string[];
@@ -21,22 +34,33 @@ export interface IAddJobOfferInput {
 const postAddJobOffer = async (
   data: IAddJobOfferInput
 ): Promise<DocumentData> => {
-  const { userId, title, link, salary, requirements, techStack } = data;
+  const {
+    title,
+    link,
+    salary,
+    requirements,
+    techStack,
+    experience,
+    operatingMode,
+    typeOfWork,
+  } = data;
 
   const docRef = await addDoc(collection(db, 'users', data.userId, 'jobs'), {
-    userId,
     title,
+    date: dayjs().format('DD.MM.YYYY'),
     link,
     techStack,
     salary: {
       grossPerMonthPermanent: salary?.grossPerMonthPermanent,
       netPerMonthB2B: salary?.netPerMonthB2B,
     },
+    experience: experience,
+    operatingMode: operatingMode,
+    typeOfWork: typeOfWork,
     requirements: {
       essentialSkills: requirements?.essentialSkills,
       niceToHaves: requirements?.niceToHaves,
     },
-    date: new Date(),
   });
 
   return docRef;
@@ -50,9 +74,13 @@ export const useMutationPostAddJobOffer = (
   args?: IMutationPostAddJobOfferArgs
 ) => {
   const { options } = args ?? {};
+  const queryClient = useQueryClient();
 
   return useMutation<DocumentData, Error, IAddJobOfferInput>({
     mutationFn: (data: IAddJobOfferInput) => postAddJobOffer(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['jobListing'] });
+    },
     ...options,
   });
 };

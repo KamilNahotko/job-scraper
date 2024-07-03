@@ -2,7 +2,7 @@
 
 import { useUser } from '@clerk/nextjs';
 import { useFirebaseAuth } from '../hooks';
-import { AddJobOfferForm } from '@/modules';
+import { AddJobOfferForm, JobListing } from '@/modules';
 
 export default function Home() {
   const { isLoading } = useFirebaseAuth();
@@ -10,8 +10,9 @@ export default function Home() {
 
   if (isLoading || !user) return <h1>loading...</h1>;
   return (
-    <main className='container mx-auto w-full text-center'>
+    <main className='container mx-auto w-full'>
       <AddJobOfferForm userId={user.id} />
+      <JobListing userId={user.id} />
     </main>
   );
 }

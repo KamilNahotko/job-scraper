@@ -8,9 +8,18 @@ export interface IScrapJobOfferInput {
 
 interface IScrapJobOfferData {
   title?: string;
+  experience?: string;
+  operatingMode?: string;
+  typeOfWork?: string;
   salary?: {
-    grossPerMonthPermanent: number;
-    netPerMonthB2B: number;
+    grossPerMonthPermanent: {
+      min: number;
+      max: number;
+    };
+    netPerMonthB2B: {
+      min: number;
+      max: number;
+    };
   };
   requirements?: {
     essentialSkills: string[];

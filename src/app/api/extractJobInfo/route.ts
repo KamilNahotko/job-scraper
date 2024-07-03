@@ -62,11 +62,20 @@ export async function POST(request: NextRequest) {
     const prompt = `
     Please analyze the following job description text and extract the key information. Format the extracted data into a JavaScript JSON Object with the following structure:
     {
-      salary: {
-        netPerMonthB2B: "Net B2B earnings here",
-        grossPerMonthPermanent: "Gross permanent earnings here"
-      },
       title: "Job title here",
+      salary: {
+        netPerMonthB2B: {
+          min: "min. net B2B earnings here. It must be number",
+          max: "max net B2B earnings here. It must be number",
+        },
+        grossPerMonthPermanent: {
+          min: "min. gross permanent earnings here.",
+          max: "max. gross permanent earnings here.",
+        }
+      },
+      experience: "Enter the required experience, e.g. junior, mid, senior.",
+      operatingMode: "mode of operation, e.g. remote, hybrid, stationary",
+      typeOfWork: "type of work, e.g. Full-Time, Part-Time .etc",
       techStack: [
         "Tech Stack 1 here",
         "Tech Stack 2 here",

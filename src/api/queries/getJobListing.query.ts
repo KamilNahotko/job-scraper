@@ -1,13 +1,13 @@
 import { QueryOptions, useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { db } from '../firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, limit, orderBy, query } from 'firebase/firestore';
 
 interface IJobListingData {
   id: string;
   salary: Salary;
   link: string;
-  date: Date;
+  date: string;
   requirements: Requirements;
   title: string;
   techStack: string[];
@@ -40,7 +40,9 @@ interface IQueryGetJobListingArgs {
 export const getJobListing = async (
   userId: string
 ): Promise<IJobListingData[]> => {
-  const querySnapshot = await getDocs(collection(db, 'users', userId, 'jobs'));
+  const querySnapshot = await getDocs(
+    query(collection(db, 'users', userId, 'jobs'), orderBy('date', 'desc'))
+  );
   const data = querySnapshot.docs.map((doc) => {
     return {
       ...doc.data(),

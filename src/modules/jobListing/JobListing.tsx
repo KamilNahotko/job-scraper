@@ -66,7 +66,7 @@ export const JobListing = ({ userId }: { userId: string }) => {
                         </Badge>
                       </TableCell>
                       <TableCell className='hidden md:table-cell'>
-                        {dayjs().format('DD.MM.YYYY')}
+                        {job.date}
                       </TableCell>
                       <TableCell className='text-right'>
                         <Button variant='outline' size='sm'>

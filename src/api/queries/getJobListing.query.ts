@@ -1,7 +1,14 @@
 import { QueryOptions, useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { db } from '../firebase';
-import { collection, getDocs, limit, orderBy, query } from 'firebase/firestore';
+import {
+  collection,
+  getDocs,
+  limit as firestoreLimit,
+  orderBy,
+  query,
+} from 'firebase/firestore';
+import { jobListingLimit } from '@/consts';
 
 interface IJobListingData {
   id: string;
@@ -34,14 +41,26 @@ export type Requirements = {
 
 interface IQueryGetJobListingArgs {
   userId: string;
+  limit?: number;
   options?: QueryOptions<IJobListingData[], AxiosError>;
 }
 
+interface IGetJobListingOptions {
+  userId: string;
+  limit?: number;
+}
+
 export const getJobListing = async (
-  userId: string
+  options: IGetJobListingOptions
 ): Promise<IJobListingData[]> => {
+  const { userId, limit = jobListingLimit } = options;
+
   const querySnapshot = await getDocs(
-    query(collection(db, 'users', userId, 'jobs'), orderBy('date', 'desc'))
+    query(
+      collection(db, 'users', userId, 'jobs'),
+      orderBy('date', 'desc'),
+      firestoreLimit(limit)
+    )
   );
   const data = querySnapshot.docs.map((doc) => {
     return {
@@ -54,11 +73,11 @@ export const getJobListing = async (
 };
 
 export const useQueryGetJobListing = (args: IQueryGetJobListingArgs) => {
-  const { options, userId } = args;
+  const { options, userId, limit } = args;
 
   return useQuery<IJobListingData[], AxiosError>({
-    queryKey: ['jobListing', userId],
-    queryFn: () => getJobListing(userId),
+    queryKey: ['jobListing', userId, limit],
+    queryFn: () => getJobListing({ userId, limit }),
     ...options,
   });
 };

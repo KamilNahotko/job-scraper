@@ -17,8 +17,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useJobListingStore } from '@/store';
-import dayjs from 'dayjs';
 import { JobListingSkeletonRow } from './components';
+import { jobListingLimit } from '@/consts';
 
 export const JobListing = ({ userId }: { userId: string }) => {
   const { data } = useQueryGetJobListing({ userId });
@@ -44,10 +44,13 @@ export const JobListing = ({ userId }: { userId: string }) => {
           </TableHeader>
           <TableBody>
             {isLoading
-              ? [...Array(5)].map((_, i) => <JobListingSkeletonRow key={i} />)
+              ? [...Array(jobListingLimit)].map((_, i) => (
+                  <JobListingSkeletonRow key={i} />
+                ))
               : data?.map((job) => {
                   const salaryPermanent = job.salary.grossPerMonthPermanent;
                   const salaryB2B = job.salary.netPerMonthB2B;
+
                   return (
                     <TableRow key={job.id} className='bg-accent'>
                       <TableCell>

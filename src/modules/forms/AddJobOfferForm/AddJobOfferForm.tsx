@@ -13,33 +13,34 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 export const AddJobOfferForm = ({ userId }: { userId: string }) => {
   const { register, handleSubmit } = useForm<IAddJobOfferForm>();
 
-  const setIsAddingJobToListing = useJobListingStore(
-    (state) => state.setIsAddingJobToListing
+  const { setIsAddingJobToListing, isAddingJobToListing } = useJobListingStore(
+    (state) => ({
+      setIsAddingJobToListing: state.setIsAddingJobToListing,
+      isAddingJobToListing: state.isAddingJobToListing,
+    })
   );
 
-  const { mutate: addJobOfferMutate, isPending: isAddJobOfferPending } =
-    useMutationPostAddJobOffer({
-      options: {
-        onSettled: () => {
-          setIsAddingJobToListing(false);
-        },
+  const { mutate: addJobOfferMutate } = useMutationPostAddJobOffer({
+    options: {
+      onSettled: () => {
+        setIsAddingJobToListing(false);
       },
-    });
-  const { mutate: scrapJobOfferMutate, isPending: isScrapJobOfferPending } =
-    useMutationPostScrapJobOffer({
-      options: {
-        onMutate: () => {
-          setIsAddingJobToListing(true);
-        },
-        onSuccess: (data, IScrapJobOfferInput) => {
-          addJobOfferMutate({
-            ...data,
-            link: IScrapJobOfferInput.jobOfferUrl,
-            userId,
-          });
-        },
+    },
+  });
+  const { mutate: scrapJobOfferMutate } = useMutationPostScrapJobOffer({
+    options: {
+      onMutate: () => {
+        setIsAddingJobToListing(true);
       },
-    });
+      onSuccess: (data, IScrapJobOfferInput) => {
+        addJobOfferMutate({
+          ...data,
+          link: IScrapJobOfferInput.jobOfferUrl,
+          userId,
+        });
+      },
+    },
+  });
 
   const onSubmit: SubmitHandler<IAddJobOfferForm> = async ({ jobOfferUrl }) => {
     scrapJobOfferMutate({
@@ -65,6 +66,7 @@ export const AddJobOfferForm = ({ userId }: { userId: string }) => {
                     Scrap Job Offer
                   </Label>
                   <Input
+                    disabled={isAddingJobToListing}
                     className='h-full'
                     id='jobOfferUrl'
                     placeholder='Scrap job offer'
@@ -72,7 +74,7 @@ export const AddJobOfferForm = ({ userId }: { userId: string }) => {
                   />
                 </div>
                 <div className='flex-[0_0_auto]'>
-                  <Button size={'icon'}>
+                  <Button size={'icon'} disabled={isAddingJobToListing}>
                     <FilePlus />
                   </Button>
                 </div>

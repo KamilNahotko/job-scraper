@@ -16,10 +16,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { useJobListingStore } from '@/store';
 import dayjs from 'dayjs';
+import { JobListingSkeletonRow } from './components';
 
 export const JobListing = ({ userId }: { userId: string }) => {
   const { data } = useQueryGetJobListing({ userId });
+
+  const isLoading = useJobListingStore((state) => state.isAddingJobToListing);
 
   return (
     <Card>
@@ -39,37 +43,39 @@ export const JobListing = ({ userId }: { userId: string }) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data?.map((job) => {
-              const salaryPermanent = job.salary.grossPerMonthPermanent;
-              const salaryB2B = job.salary.netPerMonthB2B;
-              return (
-                <TableRow key={job.id} className='bg-accent'>
-                  <TableCell>
-                    <div className='font-medium'>{job.title}</div>
-                  </TableCell>
-                  <TableCell className='hidden sm:table-cell'>
-                    <div>
-                      {`${salaryPermanent.min}-${salaryPermanent.max}`} /
-                      Permanent
-                    </div>
-                    <div> {`${salaryB2B.min}-${salaryB2B.max}`} / B2B</div>
-                  </TableCell>
-                  <TableCell className='hidden sm:table-cell'>
-                    <Badge className='text-xs' variant='secondary'>
-                      {job.experience}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className='hidden md:table-cell'>
-                    {dayjs().format('DD.MM.YYYY')}
-                  </TableCell>
-                  <TableCell className='text-right'>
-                    <Button variant='outline' size='sm'>
-                      Edit
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
+            {isLoading
+              ? [...Array(5)].map((_, i) => <JobListingSkeletonRow key={i} />)
+              : data?.map((job) => {
+                  const salaryPermanent = job.salary.grossPerMonthPermanent;
+                  const salaryB2B = job.salary.netPerMonthB2B;
+                  return (
+                    <TableRow key={job.id} className='bg-accent'>
+                      <TableCell>
+                        <div className='font-medium'>{job.title}</div>
+                      </TableCell>
+                      <TableCell className='hidden sm:table-cell'>
+                        <div>
+                          {`${salaryPermanent.min}-${salaryPermanent.max}`} /
+                          Permanent
+                        </div>
+                        <div> {`${salaryB2B.min}-${salaryB2B.max}`} / B2B</div>
+                      </TableCell>
+                      <TableCell className='hidden sm:table-cell'>
+                        <Badge className='text-xs' variant='secondary'>
+                          {job.experience}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className='hidden md:table-cell'>
+                        {dayjs().format('DD.MM.YYYY')}
+                      </TableCell>
+                      <TableCell className='text-right'>
+                        <Button variant='outline' size='sm'>
+                          Edit
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
           </TableBody>
         </Table>
       </CardContent>

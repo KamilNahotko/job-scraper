@@ -5,6 +5,7 @@ import { useMutationPostScrapJobOffer } from '@/api/queries/postScrapJobOffer.qu
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useJobListingStore } from '@/store';
 import { FilePlus } from 'lucide-react';
 
 import { useForm, SubmitHandler } from 'react-hook-form';
@@ -12,10 +13,24 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 export const AddJobOfferForm = ({ userId }: { userId: string }) => {
   const { register, handleSubmit } = useForm<IAddJobOfferForm>();
 
-  const { mutate: addJobOfferMutate } = useMutationPostAddJobOffer();
-  const { mutate: scrapJobOfferMutate, isPending } =
+  const setIsAddingJobToListing = useJobListingStore(
+    (state) => state.setIsAddingJobToListing
+  );
+
+  const { mutate: addJobOfferMutate, isPending: isAddJobOfferPending } =
+    useMutationPostAddJobOffer({
+      options: {
+        onSettled: () => {
+          setIsAddingJobToListing(false);
+        },
+      },
+    });
+  const { mutate: scrapJobOfferMutate, isPending: isScrapJobOfferPending } =
     useMutationPostScrapJobOffer({
       options: {
+        onMutate: () => {
+          setIsAddingJobToListing(true);
+        },
         onSuccess: (data, IScrapJobOfferInput) => {
           addJobOfferMutate({
             ...data,

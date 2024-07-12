@@ -1,16 +1,20 @@
-import { QueryOptions, useQuery } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
-import { db } from '../firebase';
+import { QueryOptions, useQuery } from "@tanstack/react-query";
+import { AxiosError } from "axios";
+import { db } from "../firebase";
 import {
   collection,
   getDocs,
   limit as firestoreLimit,
   orderBy,
   query,
-} from 'firebase/firestore';
-import { jobListingLimit } from '@/consts';
+  startAfter,
+  endBefore,
+  DocumentSnapshot,
+  limitToLast,
+} from "firebase/firestore";
+import { jobListingLimit } from "@/consts";
 
-interface IJobListingData {
+export interface IJobListingData {
   id: string;
   salary: Salary;
   link: string;
@@ -42,26 +46,57 @@ export type Requirements = {
 interface IQueryGetJobListingArgs {
   userId: string;
   limit?: number;
-  options?: QueryOptions<IJobListingData[], AxiosError>;
+  startAfterDoc?: DocumentSnapshot;
+  endBeforeDoc?: DocumentSnapshot;
+  options?: QueryOptions<
+    {
+      jobOffers: IJobListingData[];
+      firstVisible: DocumentSnapshot;
+      lastVisible: DocumentSnapshot;
+    },
+    AxiosError
+  >;
 }
 
 interface IGetJobListingOptions {
   userId: string;
   limit?: number;
+  startAfterDoc?: DocumentSnapshot;
+  endBeforeDoc?: DocumentSnapshot;
 }
 
 export const getJobListing = async (
-  options: IGetJobListingOptions
-): Promise<IJobListingData[]> => {
-  const { userId, limit = jobListingLimit } = options;
+  options: IGetJobListingOptions,
+): Promise<{
+  jobOffers: IJobListingData[];
+  firstVisible: DocumentSnapshot;
+  lastVisible: DocumentSnapshot;
+}> => {
+  const {
+    userId,
+    limit = jobListingLimit,
+    startAfterDoc,
+    endBeforeDoc,
+  } = options;
 
-  const querySnapshot = await getDocs(
-    query(
-      collection(db, 'users', userId, 'jobs'),
-      orderBy('date', 'desc'),
-      firestoreLimit(limit)
-    )
+  let baseQuery = query(
+    collection(db, "users", userId, "jobs"),
+    orderBy("date", "desc"),
+    firestoreLimit(limit),
   );
+
+  if (startAfterDoc) {
+    baseQuery = query(
+      baseQuery,
+      startAfter(startAfterDoc),
+      firestoreLimit(limit),
+    );
+  } else if (endBeforeDoc) {
+    baseQuery = query(baseQuery, endBefore(endBeforeDoc), limitToLast(limit));
+  }
+
+  const querySnapshot = await getDocs(baseQuery);
+
   const data = querySnapshot.docs.map((doc) => {
     return {
       ...doc.data(),
@@ -69,15 +104,33 @@ export const getJobListing = async (
     };
   });
 
-  return data as IJobListingData[];
+  const firstVisible = querySnapshot.docs[0];
+  const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+
+  return { jobOffers: data as IJobListingData[], firstVisible, lastVisible };
 };
 
 export const useQueryGetJobListing = (args: IQueryGetJobListingArgs) => {
-  const { options, userId, limit } = args;
+  const { options, userId, limit, startAfterDoc, endBeforeDoc } = args;
 
-  return useQuery<IJobListingData[], AxiosError>({
-    queryKey: ['jobListing', userId, limit],
-    queryFn: () => getJobListing({ userId, limit }),
+  return useQuery<
+    {
+      jobOffers: IJobListingData[];
+      firstVisible: DocumentSnapshot;
+      lastVisible: DocumentSnapshot;
+    },
+    AxiosError
+  >({
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    queryKey: [
+      "jobListing",
+      userId,
+      limit,
+      startAfterDoc?.id,
+      endBeforeDoc?.id,
+    ],
+    queryFn: () =>
+      getJobListing({ userId, limit, startAfterDoc, endBeforeDoc }),
     ...options,
   });
 };

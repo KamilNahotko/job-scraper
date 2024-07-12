@@ -1,1 +1,2 @@
-export { useFirebaseAuth } from './useFirebaseAuth';
+export { useFirebaseAuth } from "./useFirebaseAuth";
+export { useAuthenticatedUser } from "./useAuthenticatedUser";

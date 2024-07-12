@@ -20,10 +20,12 @@ import {
 } from "@/components/ui/table";
 import { useJobListingStore } from "@/store";
 import { JobListingSkeletonRow } from "./components";
-import { jobListingLimit } from "@/consts";
+import { APP_URL, jobListingLimit } from "@/consts";
 import { useState } from "react";
 import { DocumentSnapshot } from "firebase/firestore";
 import { Pagination } from "./components/pagination";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 export const JobListing = ({
   userId,
@@ -32,6 +34,9 @@ export const JobListing = ({
   userId: string;
   isShowPagination?: boolean;
 }) => {
+  const pathname = usePathname();
+  const isHomePage = pathname === APP_URL.home;
+
   const [firstDoc, setFirstDoc] = useState<DocumentSnapshot>();
   const [lastDoc, setLastDoc] = useState<DocumentSnapshot>();
   const [currentPage, setCurrentPage] = useState(1);
@@ -69,6 +74,19 @@ export const JobListing = ({
   const isDisabledNextPage = jobListingData
     ? jobListingData.jobOffers.length < limitPerPage
     : true;
+
+  const isJobOffers = jobListingData && jobListingData.jobOffers.length > 0;
+
+  if (!isJobOffers)
+    return isHomePage ? null : (
+      <h1 className="mt-10 text-center">
+        You have not added any job offer.<br></br> Go back to{" "}
+        <Link className="underline" href={APP_URL.home}>
+          the home page
+        </Link>{" "}
+        to add some.
+      </h1>
+    );
 
   return (
     <>

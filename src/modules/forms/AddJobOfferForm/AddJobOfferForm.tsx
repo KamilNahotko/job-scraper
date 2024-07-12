@@ -50,7 +50,7 @@ export const AddJobOfferForm = ({ userId }: { userId: string }) => {
 
   return (
     <div className="relative overflow-hidden">
-      <div className="container py-24 lg:py-32">
+      <div className="container pb-28 pt-10">
         <div className="text-center">
           <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
             Job Scrapper

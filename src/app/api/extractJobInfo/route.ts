@@ -63,6 +63,7 @@ export async function POST(request: NextRequest) {
     Please analyze the following job description text and extract the key information. Format the extracted data into a JavaScript JSON Object with the following structure:
     {
       title: "Job title here",
+      companyName: "Company name here",
       salary: {
         netPerMonthB2B: {
           min: "min. net B2B earnings here. It must be number",

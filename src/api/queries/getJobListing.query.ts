@@ -21,6 +21,7 @@ export interface IJobListingData {
   date: string;
   requirements: Requirements;
   title: string;
+  companyName: string;
   techStack: string[];
   experience?: string;
   operatingMode?: string;

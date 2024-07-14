@@ -1,6 +1,6 @@
-import { MutationOptions, useMutation } from '@tanstack/react-query';
+import { MutationOptions, useMutation } from "@tanstack/react-query";
 
-import axios, { AxiosError } from 'axios';
+import axios, { AxiosError } from "axios";
 
 export interface IScrapJobOfferInput {
   jobOfferUrl: string;
@@ -8,6 +8,7 @@ export interface IScrapJobOfferInput {
 
 interface IScrapJobOfferData {
   title?: string;
+  companyName?: string;
   experience?: string;
   operatingMode?: string;
   typeOfWork?: string;
@@ -31,7 +32,7 @@ interface IScrapJobOfferData {
 const postScrapJobOffer = async (data: IScrapJobOfferInput) => {
   const { jobOfferUrl } = data;
 
-  const response = await axios.post<IScrapJobOfferData>('/api/extractJobInfo', {
+  const response = await axios.post<IScrapJobOfferData>("/api/extractJobInfo", {
     url: jobOfferUrl,
   });
 
@@ -47,7 +48,7 @@ interface IMutationPostScrapJobOfferArgs {
 }
 
 export const useMutationPostScrapJobOffer = (
-  args?: IMutationPostScrapJobOfferArgs
+  args?: IMutationPostScrapJobOfferArgs,
 ) => {
   const { options } = args ?? {};
 

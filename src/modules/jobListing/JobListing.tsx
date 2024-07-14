@@ -100,6 +100,7 @@ export const JobListing = ({
             <TableHeader>
               <TableRow>
                 <TableHead>Job Title</TableHead>
+                <TableHead>Company Name</TableHead>
                 <TableHead className="hidden sm:table-cell">Salary</TableHead>
                 <TableHead className="hidden sm:table-cell">
                   Experience
@@ -123,6 +124,9 @@ export const JobListing = ({
                       <TableRow key={job.id} className="bg-accent">
                         <TableCell>
                           <div className="font-medium">{job.title}</div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="font-medium">{job.companyName}</div>
                         </TableCell>
                         <TableCell className="hidden sm:table-cell">
                           <div>

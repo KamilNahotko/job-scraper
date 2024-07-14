@@ -1,16 +1,17 @@
-import { db } from '@/api';
+import { db } from "@/api";
 import {
   MutationOptions,
   useMutation,
   useQueryClient,
-} from '@tanstack/react-query';
-import dayjs from 'dayjs';
-import { DocumentData, addDoc, collection } from 'firebase/firestore';
+} from "@tanstack/react-query";
+import dayjs from "dayjs";
+import { DocumentData, addDoc, collection } from "firebase/firestore";
 
 export interface IAddJobOfferInput {
   userId: string;
   link: string;
   title?: string;
+  companyName?: string;
   experience?: string;
   operatingMode?: string;
   typeOfWork?: string;
@@ -32,10 +33,11 @@ export interface IAddJobOfferInput {
 }
 
 const postAddJobOffer = async (
-  data: IAddJobOfferInput
+  data: IAddJobOfferInput,
 ): Promise<DocumentData> => {
   const {
     title,
+    companyName,
     link,
     salary,
     requirements,
@@ -45,9 +47,10 @@ const postAddJobOffer = async (
     typeOfWork,
   } = data;
 
-  const docRef = await addDoc(collection(db, 'users', data.userId, 'jobs'), {
+  const docRef = await addDoc(collection(db, "users", data.userId, "jobs"), {
     title,
-    date: dayjs().format('DD.MM.YYYY'),
+    companyName,
+    date: dayjs().format("DD.MM.YYYY"),
     link,
     techStack,
     salary: {
@@ -71,7 +74,7 @@ interface IMutationPostAddJobOfferArgs {
 }
 
 export const useMutationPostAddJobOffer = (
-  args?: IMutationPostAddJobOfferArgs
+  args?: IMutationPostAddJobOfferArgs,
 ) => {
   const { options } = args ?? {};
   const queryClient = useQueryClient();
@@ -79,7 +82,7 @@ export const useMutationPostAddJobOffer = (
   return useMutation<DocumentData, Error, IAddJobOfferInput>({
     mutationFn: (data: IAddJobOfferInput) => postAddJobOffer(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['jobListing'] });
+      queryClient.invalidateQueries({ queryKey: ["jobListing"] });
     },
     ...options,
   });

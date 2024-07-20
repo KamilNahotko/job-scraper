@@ -50,7 +50,7 @@ const postAddJobOffer = async (
   const docRef = await addDoc(collection(db, "users", data.userId, "jobs"), {
     title,
     companyName,
-    date: dayjs().format("DD.MM.YYYY"),
+    date: dayjs().toDate(),
     link,
     techStack,
     salary: {

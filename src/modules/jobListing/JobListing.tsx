@@ -26,6 +26,7 @@ import { DocumentSnapshot } from "firebase/firestore";
 import { Pagination } from "./components/pagination";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import dayjs from "dayjs";
 
 export const JobListing = ({
   userId,
@@ -119,6 +120,9 @@ export const JobListing = ({
                 : jobListingData?.jobOffers?.map((job) => {
                     const salaryPermanent = job.salary.grossPerMonthPermanent;
                     const salaryB2B = job.salary.netPerMonthB2B;
+                    const dateString = dayjs(job.date.toDate()).format(
+                      "DD.MM.YYYY",
+                    );
 
                     return (
                       <TableRow key={job.id} className="bg-accent">
@@ -144,7 +148,7 @@ export const JobListing = ({
                           </Badge>
                         </TableCell>
                         <TableCell className="hidden md:table-cell">
-                          {job.date}
+                          {dateString}
                         </TableCell>
                         <TableCell className="text-right">
                           <Button variant="outline" size="sm">

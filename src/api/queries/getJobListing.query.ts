@@ -11,6 +11,7 @@ import {
   endBefore,
   DocumentSnapshot,
   limitToLast,
+  Timestamp,
 } from "firebase/firestore";
 import { jobListingLimit } from "@/consts";
 
@@ -18,7 +19,7 @@ export interface IJobListingData {
   id: string;
   salary: Salary;
   link: string;
-  date: string;
+  date: Timestamp;
   requirements: Requirements;
   title: string;
   companyName: string;

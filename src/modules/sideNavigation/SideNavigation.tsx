@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   Home,
@@ -13,8 +15,20 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { APP_URL } from "@/consts";
+import { usePathname } from "next/navigation";
 
 export const SideNavigation = () => {
+  const pathname = usePathname();
+
+  const getLinkClassName = (href: string) => {
+    const baseClasses =
+      "flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:text-foreground md:h-8 md:w-8";
+    const activeClasses = "bg-accent text-accent-foreground";
+    const inactiveClasses = "text-muted-foreground";
+
+    return `${baseClasses} ${pathname === href ? activeClasses : inactiveClasses}`;
+  };
+
   return (
     <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
       <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
@@ -37,21 +51,21 @@ export const SideNavigation = () => {
             <TooltipTrigger asChild>
               <Link
                 href={APP_URL.jobListing}
-                className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                className={getLinkClassName(APP_URL.jobListing)}
               >
                 <BriefcaseBusiness className="h-5 w-5" />
-                <span className="sr-only">Jobs listing</span>
+                <span className="sr-only">Job listing</span>
               </Link>
             </TooltipTrigger>
-            <TooltipContent side="right">Jobs listing</TooltipContent>
+            <TooltipContent side="right">Job listing</TooltipContent>
           </Tooltip>
         </TooltipProvider>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
-                href="#"
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                href={APP_URL.calendar}
+                className={getLinkClassName(APP_URL.calendar)}
               >
                 <CalendarDays className="h-5 w-5" />
                 <span className="sr-only">Calendar</span>
@@ -64,8 +78,8 @@ export const SideNavigation = () => {
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
-                href="#"
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                href={APP_URL.analytics}
+                className={getLinkClassName(APP_URL.analytics)}
               >
                 <LineChart className="h-5 w-5" />
                 <span className="sr-only">Analytics</span>

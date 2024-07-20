@@ -90,7 +90,7 @@ export const JobListing = ({
     );
 
   return (
-    <>
+    <div className="flex flex-col gap-10">
       <Card>
         <CardHeader className="px-7">
           <CardTitle>Job Offers</CardTitle>
@@ -171,6 +171,6 @@ export const JobListing = ({
           isDisabledNextPage={isDisabledNextPage}
         />
       )}
-    </>
+    </div>
   );
 };

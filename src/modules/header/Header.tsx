@@ -4,27 +4,27 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { SignedIn, UserButton } from "@clerk/nextjs";
 import {
+  BriefcaseBusiness,
+  CalendarDays,
   Home,
   LineChart,
-  Package,
-  Package2,
   PanelLeft,
-  ShoppingCart,
-  Users2,
 } from "lucide-react";
 import Link from "next/link";
 import { Breadcrumbs } from "../breadcrumbs";
+import { APP_URL } from "@/consts";
+import { usePathname } from "next/navigation";
 
 export const Header = () => {
-  const breadcrumbs = [
-    {
-      name: "Dashboard",
-      url: "/",
-    },
-    {
-      name: "Home",
-    },
-  ];
+  const pathname = usePathname();
+
+  const getLinkClassName = (href: string) => {
+    const baseClasses = "flex items-center gap-4 px-2.5";
+    const activeClasses = "text-foreground";
+    const inactiveClasses = "text-muted-foreground hover:text-foreground";
+
+    return `${baseClasses} ${pathname === href ? activeClasses : inactiveClasses}`;
+  };
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
@@ -36,48 +36,34 @@ export const Header = () => {
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="sm:max-w-xs">
-          <nav className="grid gap-6 text-lg font-medium">
+          <nav className="mt-6 grid gap-6 text-lg font-medium">
             <Link
-              href="#"
-              className="group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base"
-            >
-              <Package2 className="h-5 w-5 transition-all group-hover:scale-110" />
-              <span className="sr-only">Acme Inc</span>
-            </Link>
-            <Link
-              href="#"
-              className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+              href={APP_URL.home}
+              className={getLinkClassName(APP_URL.home)}
             >
               <Home className="h-5 w-5" />
               Dashboard
             </Link>
             <Link
-              href="#"
-              className="flex items-center gap-4 px-2.5 text-foreground"
+              href={APP_URL.jobListing}
+              className={getLinkClassName(APP_URL.jobListing)}
             >
-              <ShoppingCart className="h-5 w-5" />
-              Orders
+              <BriefcaseBusiness className="h-5 w-5" />
+              Job listing
             </Link>
             <Link
-              href="#"
-              className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+              href={APP_URL.calendar}
+              className={getLinkClassName(APP_URL.calendar)}
             >
-              <Package className="h-5 w-5" />
-              Products
+              <CalendarDays className="h-5 w-5" />
+              Calendar
             </Link>
             <Link
-              href="#"
-              className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
-            >
-              <Users2 className="h-5 w-5" />
-              Customers
-            </Link>
-            <Link
-              href="#"
-              className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+              href={APP_URL.analytics}
+              className={getLinkClassName(APP_URL.analytics)}
             >
               <LineChart className="h-5 w-5" />
-              Settings
+              Analytics
             </Link>
           </nav>
         </SheetContent>

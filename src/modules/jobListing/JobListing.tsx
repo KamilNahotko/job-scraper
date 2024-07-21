@@ -21,7 +21,7 @@ import {
 import { useJobListingStore } from "@/store";
 import { JobListingSkeletonRow } from "./components";
 import { APP_URL, jobListingLimit } from "@/consts";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DocumentSnapshot } from "firebase/firestore";
 import { Pagination } from "./components/pagination";
 import { usePathname } from "next/navigation";
@@ -41,7 +41,8 @@ export const JobListing = ({
   const [firstDoc, setFirstDoc] = useState<DocumentSnapshot>();
   const [lastDoc, setLastDoc] = useState<DocumentSnapshot>();
   const [currentPage, setCurrentPage] = useState(1);
-  const limitPerPage = 5;
+  const [rowsPerPage, setRowsPerPage] = useState("5");
+  const limitPerPage = Number(rowsPerPage);
 
   const { data: jobListingData, isLoading: isLoadingJobListing } =
     useQueryGetJobListing({
@@ -71,12 +72,12 @@ export const JobListing = ({
     }
   };
 
-  const isDisabledPrevPage = currentPage === 1;
-  const isDisabledNextPage = jobListingData
-    ? jobListingData.jobOffers.length < limitPerPage
-    : true;
-
   const isJobOffers = jobListingData && jobListingData.jobOffers.length > 0;
+
+  useEffect(() => {
+    setLastDoc(undefined);
+    setFirstDoc(undefined);
+  }, [rowsPerPage]);
 
   if (!isJobOffers)
     return isHomePage ? null : (
@@ -90,87 +91,81 @@ export const JobListing = ({
     );
 
   return (
-    <div className="flex flex-col gap-10">
-      <Card>
-        <CardHeader className="px-7">
-          <CardTitle>Job Offers</CardTitle>
-          <CardDescription>Recent added job offers.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Job Title</TableHead>
-                <TableHead>Company Name</TableHead>
-                <TableHead className="hidden sm:table-cell">Salary</TableHead>
-                <TableHead className="hidden sm:table-cell">
-                  Experience
-                </TableHead>
-                <TableHead className="hidden md:table-cell">
-                  Date Added
-                </TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isLoadingJobListing || isAddingJobToListing
-                ? [...Array(jobListingLimit)].map((_, i) => (
-                    <JobListingSkeletonRow key={i} />
-                  ))
-                : jobListingData?.jobOffers?.map((job) => {
-                    const salaryPermanent = job.salary.grossPerMonthPermanent;
-                    const salaryB2B = job.salary.netPerMonthB2B;
-                    const dateString = dayjs(job.date.toDate()).format(
-                      "DD.MM.YYYY",
-                    );
+    <Card className="pb-4">
+      <CardHeader className="px-7">
+        <CardTitle>Job Offers</CardTitle>
+        <CardDescription>Recent added job offers.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Job Title</TableHead>
+              <TableHead>Company Name</TableHead>
+              <TableHead className="hidden sm:table-cell">Salary</TableHead>
+              <TableHead className="hidden sm:table-cell">Experience</TableHead>
+              <TableHead className="hidden md:table-cell">Date Added</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {isLoadingJobListing || isAddingJobToListing
+              ? [...Array(jobListingLimit)].map((_, i) => (
+                  <JobListingSkeletonRow key={i} />
+                ))
+              : jobListingData?.jobOffers?.map((job) => {
+                  const salaryPermanent = job.salary.grossPerMonthPermanent;
+                  const salaryB2B = job.salary.netPerMonthB2B;
+                  const dateString = dayjs(job.date.toDate()).format(
+                    "DD.MM.YYYY",
+                  );
 
-                    return (
-                      <TableRow key={job.id} className="bg-accent">
-                        <TableCell>
-                          <div className="font-medium">{job.title}</div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="font-medium">{job.companyName}</div>
-                        </TableCell>
-                        <TableCell className="hidden sm:table-cell">
-                          <div>
-                            {`${salaryPermanent.min}-${salaryPermanent.max}`} /
-                            Permanent
-                          </div>
-                          <div>
-                            {" "}
-                            {`${salaryB2B.min}-${salaryB2B.max}`} / B2B
-                          </div>
-                        </TableCell>
-                        <TableCell className="hidden sm:table-cell">
-                          <Badge className="text-xs" variant="secondary">
-                            {job.experience}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          {dateString}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Button variant="outline" size="sm">
-                            Edit
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+                  return (
+                    <TableRow key={job.id} className="bg-accent">
+                      <TableCell>
+                        <div className="font-medium">{job.title}</div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="font-medium">{job.companyName}</div>
+                      </TableCell>
+                      <TableCell className="hidden sm:table-cell">
+                        <div>
+                          {`${salaryPermanent.min}-${salaryPermanent.max}`} /
+                          Permanent
+                        </div>
+                        <div> {`${salaryB2B.min}-${salaryB2B.max}`} / B2B</div>
+                      </TableCell>
+                      <TableCell className="hidden sm:table-cell">
+                        <Badge className="text-xs" variant="secondary">
+                          {job.experience}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        {dateString}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button variant="outline" size="sm">
+                          Edit
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+          </TableBody>
+        </Table>
+      </CardContent>
 
       {isShowPagination && (
         <Pagination
           handlePrevPage={handlePrevPage}
           handleNextPage={handleNextPage}
-          isDisabledPrevPage={isDisabledPrevPage}
-          isDisabledNextPage={isDisabledNextPage}
+          setRowsPerPage={setRowsPerPage}
+          rowsPerPage={rowsPerPage}
+          total={jobListingData.total}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
         />
       )}
-    </div>
+    </Card>
   );
 };

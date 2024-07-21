@@ -12,6 +12,7 @@ import {
   DocumentSnapshot,
   limitToLast,
   Timestamp,
+  getCountFromServer,
 } from "firebase/firestore";
 import { jobListingLimit } from "@/consts";
 
@@ -55,6 +56,7 @@ interface IQueryGetJobListingArgs {
       jobOffers: IJobListingData[];
       firstVisible: DocumentSnapshot;
       lastVisible: DocumentSnapshot;
+      total: number;
     },
     AxiosError
   >;
@@ -73,6 +75,7 @@ export const getJobListing = async (
   jobOffers: IJobListingData[];
   firstVisible: DocumentSnapshot;
   lastVisible: DocumentSnapshot;
+  total: number;
 }> => {
   const {
     userId,
@@ -81,11 +84,9 @@ export const getJobListing = async (
     endBeforeDoc,
   } = options;
 
-  let baseQuery = query(
-    collection(db, "users", userId, "jobs"),
-    orderBy("date", "desc"),
-    firestoreLimit(limit),
-  );
+  const coll = collection(db, "users", userId, "jobs");
+
+  let baseQuery = query(coll, orderBy("date", "desc"), firestoreLimit(limit));
 
   if (startAfterDoc) {
     baseQuery = query(
@@ -97,7 +98,10 @@ export const getJobListing = async (
     baseQuery = query(baseQuery, endBefore(endBeforeDoc), limitToLast(limit));
   }
 
-  const querySnapshot = await getDocs(baseQuery);
+  const [querySnapshot, countSnapshot] = await Promise.all([
+    getDocs(baseQuery),
+    getCountFromServer(coll),
+  ]);
 
   const data = querySnapshot.docs.map((doc) => {
     return {
@@ -109,7 +113,12 @@ export const getJobListing = async (
   const firstVisible = querySnapshot.docs[0];
   const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
 
-  return { jobOffers: data as IJobListingData[], firstVisible, lastVisible };
+  return {
+    jobOffers: data as IJobListingData[],
+    firstVisible,
+    lastVisible,
+    total: countSnapshot.data().count,
+  };
 };
 
 export const useQueryGetJobListing = (args: IQueryGetJobListingArgs) => {
@@ -120,6 +129,7 @@ export const useQueryGetJobListing = (args: IQueryGetJobListingArgs) => {
       jobOffers: IJobListingData[];
       firstVisible: DocumentSnapshot;
       lastVisible: DocumentSnapshot;
+      total: number;
     },
     AxiosError
   >({

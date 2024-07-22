@@ -8,7 +8,9 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
         <SideNavigation />
         <div className="flex flex-grow flex-col sm:gap-4 sm:py-4 sm:pl-14">
           <Header />
-          {children}
+          <main className="container mx-auto w-full p-4 sm:p-6 lg:p-8">
+            {children}
+          </main>
         </div>
       </div>
     </ReactQueryProvider>

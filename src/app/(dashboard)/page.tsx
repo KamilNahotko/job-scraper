@@ -15,10 +15,10 @@ const HomePage = () => {
     );
 
   return (
-    <main className="container mx-auto w-full">
+    <>
       <AddJobOfferForm userId={userId} />
       <JobListing userId={userId} />
-    </main>
+    </>
   );
 };
 

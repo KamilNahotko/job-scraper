@@ -15,7 +15,7 @@ const ListingPage = () => {
     );
 
   return (
-    <div className="container mx-auto mt-10 w-full">
+    <div className="mt-10">
       <JobListing userId={userId} isShowPagination />
     </div>
   );

@@ -46,52 +46,56 @@ export const Pagination = ({
 
   return (
     <div className="flex items-center justify-end gap-4 px-6">
-      <p className="text-sm font-medium">Rows per page</p>
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            aria-expanded={open}
-            className="w-[70px] justify-between"
-            size="sm"
-          >
-            {rowsPerPage
-              ? rows.find((row) => row.value === rowsPerPage)?.label
-              : "Select row..."}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-[200px] p-0">
-          <Command>
-            <CommandList>
-              <CommandGroup>
-                {rows.map((row) => (
-                  <CommandItem
-                    key={row.value}
-                    value={row.value}
-                    onSelect={(currentValue) => {
-                      setRowsPerPage(
-                        currentValue === rowsPerPage ? "5" : currentValue,
-                      );
-                      setCurrentPage(1);
-                      setOpen(false);
-                    }}
-                  >
-                    <Check
-                      className={cn(
-                        "mr-2 h-4 w-4",
-                        rowsPerPage === row.value ? "opacity-100" : "opacity-0",
-                      )}
-                    />
-                    {row.label}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
+      <div className="hidden items-center gap-4 sm:flex">
+        <p className="text-sm font-medium">Rows per page</p>
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={open}
+              className="w-[70px] justify-between"
+              size="sm"
+            >
+              {rowsPerPage
+                ? rows.find((row) => row.value === rowsPerPage)?.label
+                : "Select row..."}
+              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[200px] p-0">
+            <Command>
+              <CommandList>
+                <CommandGroup>
+                  {rows.map((row) => (
+                    <CommandItem
+                      key={row.value}
+                      value={row.value}
+                      onSelect={(currentValue) => {
+                        setRowsPerPage(
+                          currentValue === rowsPerPage ? "5" : currentValue,
+                        );
+                        setCurrentPage(1);
+                        setOpen(false);
+                      }}
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          rowsPerPage === row.value
+                            ? "opacity-100"
+                            : "opacity-0",
+                        )}
+                      />
+                      {row.label}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+      </div>
       <p className="text-sm font-medium">
         Page {currentPage} of {totalPages}
       </p>

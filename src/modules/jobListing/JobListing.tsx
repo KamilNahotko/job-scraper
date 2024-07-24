@@ -2,7 +2,6 @@
 
 import { useQueryGetJobListing } from "@/api/queries/getJobListing.query";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -19,11 +18,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useJobListingStore } from "@/store";
-import { JobListingSkeletonRow } from "./components";
+import {
+  JobListingActions,
+  JobListingSkeletonRow,
+  Pagination,
+} from "./components";
 import { APP_URL, jobListingLimit } from "@/consts";
 import { useEffect, useState } from "react";
 import { DocumentSnapshot } from "firebase/firestore";
-import { Pagination } from "./components/pagination";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import dayjs from "dayjs";
@@ -144,9 +146,10 @@ export const JobListing = ({
                         {dateString}
                       </TableCell>
                       <TableCell className="text-right">
-                        <Button variant="outline" size="sm">
-                          Edit
-                        </Button>
+                        <JobListingActions
+                          userId={userId}
+                          documentId={job.id}
+                        />
                       </TableCell>
                     </TableRow>
                   );

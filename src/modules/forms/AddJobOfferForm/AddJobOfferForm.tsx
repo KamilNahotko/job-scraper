@@ -45,7 +45,6 @@ export const AddJobOfferForm = ({ userId }: { userId: string }) => {
         addJobOfferMutate({
           ...data,
           link: IScrapJobOfferInput.jobOfferUrl,
-          userId,
         });
       },
     },

@@ -1,13 +1,13 @@
 "use client";
 
 import { AddJobOfferForm, JobListing } from "@/modules";
-import { useAuthenticatedUser } from "@/hooks";
 import { Spinner } from "@/components/ui/spinner";
+import { useUserStore } from "@/store";
 
 const HomePage = () => {
-  const { userId, isLoading } = useAuthenticatedUser();
+  const userData = useUserStore((state) => state.userData);
 
-  if (isLoading || !userId)
+  if (!userData)
     return (
       <div className="flex flex-grow items-center justify-center">
         <Spinner size="large" />
@@ -16,8 +16,8 @@ const HomePage = () => {
 
   return (
     <>
-      <AddJobOfferForm userId={userId} />
-      <JobListing userId={userId} />
+      <AddJobOfferForm userId={userData.user.uid} />
+      <JobListing userId={userData.user.uid} />
     </>
   );
 };

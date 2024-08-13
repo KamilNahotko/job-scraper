@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import OpenAI from 'openai';
+import { NextRequest, NextResponse } from "next/server";
+import OpenAI from "openai";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -8,24 +8,24 @@ const openai = new OpenAI({
 const fetchJobDescription = async (url: string): Promise<string> => {
   let browser;
 
-  if (process.env.NODE_ENV === 'production') {
-    const chromium = require('@sparticuz/chromium-min');
-    const puppeteerCore = require('puppeteer-core');
+  if (process.env.NODE_ENV === "production") {
+    const chromium = require("@sparticuz/chromium-min");
+    const puppeteerCore = require("puppeteer-core");
 
     browser = await puppeteerCore.launch({
-      args: [...chromium.args, '--hide-scrollbars', '--disable-web-security'],
+      args: [...chromium.args, "--hide-scrollbars", "--disable-web-security"],
       defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath(
-        `https://github.com/Sparticuz/chromium/releases/download/v123.0.1/chromium-v123.0.1-pack.tar`
+        `https://github.com/Sparticuz/chromium/releases/download/v123.0.1/chromium-v123.0.1-pack.tar`,
       ),
       headless: chromium.headless,
       ignoreHTTPSErrors: true,
     });
   } else {
-    const puppeteer = require('puppeteer');
+    const puppeteer = require("puppeteer");
 
     browser = await puppeteer.launch({
-      args: ['--hide-scrollbars', '--disable-web-security'],
+      args: ["--hide-scrollbars", "--disable-web-security"],
       headless: true,
       ignoreHTTPSErrors: true,
     });
@@ -33,7 +33,7 @@ const fetchJobDescription = async (url: string): Promise<string> => {
 
   try {
     const page = await browser.newPage();
-    await page.goto(url, { waitUntil: 'networkidle0' });
+    await page.goto(url, { waitUntil: "networkidle0" });
 
     const bodyText = await page.evaluate(() => {
       return document.body.innerText.trim();
@@ -41,7 +41,7 @@ const fetchJobDescription = async (url: string): Promise<string> => {
 
     return bodyText;
   } catch (error) {
-    console.error('Error fetching job description:', error);
+    console.error("Error fetching job description:", error);
     throw error;
   } finally {
     if (browser) {
@@ -51,7 +51,7 @@ const fetchJobDescription = async (url: string): Promise<string> => {
 };
 
 export const maxDuration = 60;
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
   const { url } = await request.json();
@@ -64,6 +64,7 @@ export async function POST(request: NextRequest) {
     {
       title: "Job title here",
       companyName: "Company name here",
+      description: "Add a job description here.",
       salary: {
         netPerMonthB2B: {
           min: "min. net B2B earnings here. It must be number",
@@ -110,10 +111,10 @@ export async function POST(request: NextRequest) {
     `;
 
     const chatCompletion = await openai.chat.completions.create({
-      messages: [{ role: 'user', content: prompt }],
-      model: 'gpt-3.5-turbo',
+      messages: [{ role: "user", content: prompt }],
+      model: "gpt-3.5-turbo",
       response_format: {
-        type: 'json_object',
+        type: "json_object",
       },
     });
 
@@ -122,7 +123,7 @@ export async function POST(request: NextRequest) {
       !chatCompletion.choices ||
       chatCompletion.choices.length === 0
     ) {
-      throw new Error('No valid response from OpenAI API');
+      throw new Error("No valid response from OpenAI API");
     }
 
     const responseContent = chatCompletion.choices[0].message.content;
@@ -131,16 +132,16 @@ export async function POST(request: NextRequest) {
       status: 200,
     });
   } catch (error) {
-    console.error('Error fetching from OpenAI API:', error);
+    console.error("Error fetching from OpenAI API:", error);
     return new NextResponse(
       JSON.stringify({
-        message: 'Error communicating with OpenAI API',
+        message: "Error communicating with OpenAI API",
         error,
       }),
       {
         status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      }
+        headers: { "Content-Type": "application/json" },
+      },
     );
   }
 }

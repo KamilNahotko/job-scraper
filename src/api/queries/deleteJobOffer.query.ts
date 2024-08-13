@@ -1,4 +1,5 @@
 import { db } from "@/api";
+import { useUser } from "@clerk/nextjs";
 import {
   MutationOptions,
   useMutation,
@@ -8,10 +9,12 @@ import { deleteDoc, doc } from "firebase/firestore";
 
 export interface IDeleteJobOfferInput {
   documentId: string;
-  userId: string;
 }
-const deleteJobOffer = async (data: IDeleteJobOfferInput): Promise<void> => {
-  const { documentId, userId } = data;
+const deleteJobOffer = async (
+  data: IDeleteJobOfferInput,
+  userId: string,
+): Promise<void> => {
+  const { documentId } = data;
   try {
     await deleteDoc(doc(db, "users", userId, "jobs", documentId));
   } catch (error) {
@@ -29,9 +32,15 @@ export const useMutationDeleteJobOffer = (
 ) => {
   const { options } = args ?? {};
   const queryClient = useQueryClient();
+  const { user } = useUser();
 
   return useMutation<void, Error, IDeleteJobOfferInput>({
-    mutationFn: (data: IDeleteJobOfferInput) => deleteJobOffer(data),
+    mutationFn: (data: IDeleteJobOfferInput) => {
+      if (!user) {
+        throw new Error("User not authenticated");
+      }
+      return deleteJobOffer(data, user.id);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["jobListing"] });
     },

@@ -11,49 +11,19 @@ import {
   endBefore,
   DocumentSnapshot,
   limitToLast,
-  Timestamp,
   getCountFromServer,
 } from "firebase/firestore";
 import { jobListingLimit } from "@/consts";
-
-export interface IJobListingData {
-  id: string;
-  salary: Salary;
-  link: string;
-  date: Timestamp;
-  requirements: Requirements;
-  title: string;
-  companyName: string;
-  techStack: string[];
-  experience?: string;
-  operatingMode?: string;
-  typeOfWork?: string;
-}
-
-export type Salary = {
-  grossPerMonthPermanent: {
-    min: number;
-    max: number;
-  };
-  netPerMonthB2B: {
-    min: number;
-    max: number;
-  };
-};
-
-export type Requirements = {
-  essentialSkills: string[];
-  niceToHaves: string[];
-};
+import { IJobOffer } from "@/types";
+import { useUser } from "@clerk/nextjs";
 
 interface IQueryGetJobListingArgs {
-  userId: string;
   limit?: number;
   startAfterDoc?: DocumentSnapshot;
   endBeforeDoc?: DocumentSnapshot;
   options?: QueryOptions<
     {
-      jobOffers: IJobListingData[];
+      jobOffers: IJobOffer[];
       firstVisible: DocumentSnapshot;
       lastVisible: DocumentSnapshot;
       total: number;
@@ -72,16 +42,16 @@ interface IGetJobListingOptions {
 export const getJobListing = async (
   options: IGetJobListingOptions,
 ): Promise<{
-  jobOffers: IJobListingData[];
+  jobOffers: IJobOffer[];
   firstVisible: DocumentSnapshot;
   lastVisible: DocumentSnapshot;
   total: number;
 }> => {
   const {
-    userId,
     limit = jobListingLimit,
     startAfterDoc,
     endBeforeDoc,
+    userId,
   } = options;
 
   const coll = collection(db, "users", userId, "jobs");
@@ -114,7 +84,7 @@ export const getJobListing = async (
   const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
 
   return {
-    jobOffers: data as IJobListingData[],
+    jobOffers: data as IJobOffer[],
     firstVisible,
     lastVisible,
     total: countSnapshot.data().count,
@@ -122,27 +92,40 @@ export const getJobListing = async (
 };
 
 export const useQueryGetJobListing = (args: IQueryGetJobListingArgs) => {
-  const { options, userId, limit, startAfterDoc, endBeforeDoc } = args;
+  const { options, limit, startAfterDoc, endBeforeDoc } = args;
+  const { user } = useUser();
 
   return useQuery<
     {
-      jobOffers: IJobListingData[];
+      jobOffers: IJobOffer[];
       firstVisible: DocumentSnapshot;
       lastVisible: DocumentSnapshot;
       total: number;
     },
     AxiosError
   >({
-    // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: [
       "jobListing",
-      userId,
       limit,
+      startAfterDoc,
+      endBeforeDoc,
       startAfterDoc?.id,
       endBeforeDoc?.id,
+      user,
+      user?.id,
     ],
-    queryFn: () =>
-      getJobListing({ userId, limit, startAfterDoc, endBeforeDoc }),
+    queryFn: () => {
+      if (!user) {
+        throw new Error("User not authenticated");
+      }
+      return getJobListing({
+        userId: user.id,
+        limit,
+        startAfterDoc,
+        endBeforeDoc,
+      });
+    },
+    enabled: !!user,
     ...options,
   });
 };

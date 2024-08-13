@@ -1,39 +1,25 @@
 import { db } from "@/api";
+import { ApplicationStatus, IJobOffer } from "@/types";
+import { useUser } from "@clerk/nextjs";
 import {
   MutationOptions,
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import dayjs from "dayjs";
-import { DocumentData, addDoc, collection } from "firebase/firestore";
+import {
+  DocumentData,
+  Timestamp,
+  addDoc,
+  collection,
+} from "firebase/firestore";
 
-export interface IAddJobOfferInput {
-  userId: string;
+export interface IAddJobOfferInput extends IJobOffer {
   link: string;
-  title?: string;
-  companyName?: string;
-  experience?: string;
-  operatingMode?: string;
-  typeOfWork?: string;
-  salary?: {
-    grossPerMonthPermanent: {
-      min: number;
-      max: number;
-    };
-    netPerMonthB2B: {
-      min: number;
-      max: number;
-    };
-  };
-  requirements?: {
-    essentialSkills: string[];
-    niceToHaves: string[];
-  };
-  techStack?: string[];
 }
 
 const postAddJobOffer = async (
   data: IAddJobOfferInput,
+  userId: string,
 ): Promise<DocumentData> => {
   const {
     title,
@@ -47,10 +33,11 @@ const postAddJobOffer = async (
     typeOfWork,
   } = data;
 
-  const docRef = await addDoc(collection(db, "users", data.userId, "jobs"), {
+  const docRef = await addDoc(collection(db, "users", userId, "jobs"), {
     title,
     companyName,
-    date: dayjs().toDate(),
+    date: Timestamp.now(),
+    status: ApplicationStatus.NO_RESPONSE,
     link,
     techStack,
     salary: {
@@ -78,9 +65,15 @@ export const useMutationPostAddJobOffer = (
 ) => {
   const { options } = args ?? {};
   const queryClient = useQueryClient();
+  const { user } = useUser();
 
   return useMutation<DocumentData, Error, IAddJobOfferInput>({
-    mutationFn: (data: IAddJobOfferInput) => postAddJobOffer(data),
+    mutationFn: (data: IAddJobOfferInput) => {
+      if (!user) {
+        throw new Error("User not authenticated");
+      }
+      return postAddJobOffer(data, user.id);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["jobListing"] });
     },

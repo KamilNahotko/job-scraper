@@ -1,13 +1,13 @@
 "use client";
 
 import { Spinner } from "@/components/ui/spinner";
-import { useAuthenticatedUser } from "@/hooks";
 import { JobListing } from "@/modules";
+import { useUserStore } from "@/store";
 
 const ListingPage = () => {
-  const { userId, isLoading } = useAuthenticatedUser();
+  const userData = useUserStore((state) => state.userData);
 
-  if (isLoading || !userId)
+  if (!userData)
     return (
       <div className="flex flex-grow items-center justify-center">
         <Spinner size="large" />
@@ -16,7 +16,7 @@ const ListingPage = () => {
 
   return (
     <div className="mt-10">
-      <JobListing userId={userId} isShowPagination />
+      <JobListing userId={userData.user.uid} isShowPagination />
     </div>
   );
 };

@@ -3,4 +3,5 @@ export const APP_URL = {
   jobListing: "/listing",
   calendar: "/calendar",
   analytics: "/analytics",
+  editJobOfferById: (jobOfferId: string) => `/listing/edit/${jobOfferId}`,
 };

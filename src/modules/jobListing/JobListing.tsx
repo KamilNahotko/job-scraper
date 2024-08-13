@@ -26,7 +26,7 @@ import {
 import { APP_URL, jobListingLimit } from "@/consts";
 import { useEffect, useState } from "react";
 import { DocumentSnapshot } from "firebase/firestore";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import dayjs from "dayjs";
 
@@ -37,6 +37,7 @@ export const JobListing = ({
   userId: string;
   isShowPagination?: boolean;
 }) => {
+  const router = useRouter();
   const pathname = usePathname();
   const isHomePage = pathname === APP_URL.home;
 
@@ -48,7 +49,6 @@ export const JobListing = ({
 
   const { data: jobListingData, isLoading: isLoadingJobListing } =
     useQueryGetJobListing({
-      userId,
       limit: limitPerPage,
       startAfterDoc: lastDoc,
       endBeforeDoc: firstDoc,
@@ -123,7 +123,13 @@ export const JobListing = ({
                   );
 
                   return (
-                    <TableRow key={job.id} className="bg-accent">
+                    <TableRow
+                      key={job.id}
+                      className="cursor-pointer bg-accent"
+                      onClick={() =>
+                        router.push(APP_URL.editJobOfferById(job.id))
+                      }
+                    >
                       <TableCell>
                         <div className="font-medium">{job.title}</div>
                       </TableCell>

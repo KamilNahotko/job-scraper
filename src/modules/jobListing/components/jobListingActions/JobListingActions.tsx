@@ -1,5 +1,4 @@
 import { useMutationDeleteJobOffer } from "@/api/queries/deleteJobOffer.query";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,24 +19,27 @@ export const JobListingActions = ({
   const { mutate } = useMutationDeleteJobOffer();
 
   const handleDeleteJobOffer = () => {
-    mutate({ userId, documentId });
+    mutate({ documentId });
   };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
-        <Button variant="outline" size="sm">
+        <div className="flex justify-center rounded-sm border bg-white p-2 hover:bg-slate-50">
           <EllipsisVertical />
-        </Button>
+        </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="min-w-full">
-        <DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer">
           <div className="flex items-center justify-between gap-1">
             <Pencil size={16} />
             <p className="font-medium">Edit</p>
           </div>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleDeleteJobOffer}>
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={handleDeleteJobOffer}
+        >
           <div className="flex items-center justify-between gap-1">
             <Trash2 size={16} />
             <p className="font-medium">Remove</p>

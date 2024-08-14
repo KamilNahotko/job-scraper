@@ -107,6 +107,7 @@ export const JobListing = ({
               <TableHead className="hidden sm:table-cell">Salary</TableHead>
               <TableHead className="hidden sm:table-cell">Experience</TableHead>
               <TableHead className="hidden md:table-cell">Date Added</TableHead>
+              <TableHead className="hidden md:table-cell">Status</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -150,6 +151,9 @@ export const JobListing = ({
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
                         {dateString}
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        {job.status}
                       </TableCell>
                       <TableCell className="text-right">
                         <JobListingActions

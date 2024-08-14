@@ -29,6 +29,7 @@ import { DocumentSnapshot } from "firebase/firestore";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import dayjs from "dayjs";
+import { getStatusLabel } from "../forms/JobOfferForm/JobOfferForm.utils";
 
 export const JobListing = ({
   userId,
@@ -153,7 +154,7 @@ export const JobListing = ({
                         {dateString}
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
-                        {job.status}
+                        {getStatusLabel(job.status)}
                       </TableCell>
                       <TableCell className="text-right">
                         <JobListingActions

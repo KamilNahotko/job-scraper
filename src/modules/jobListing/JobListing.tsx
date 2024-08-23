@@ -96,7 +96,7 @@ export const JobListing = ({
   return (
     <Card className="pb-4">
       <CardHeader className="px-7">
-        <CardTitle>Job Offers</CardTitle>
+        <CardTitle>Job Offers ({jobListingData.total})</CardTitle>
         <CardDescription>Recent added job offers.</CardDescription>
       </CardHeader>
       <CardContent>

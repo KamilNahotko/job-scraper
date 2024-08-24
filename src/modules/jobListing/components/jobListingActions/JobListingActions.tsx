@@ -25,7 +25,7 @@ export const JobListingActions = ({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
-        <div className="flex justify-center rounded-sm border bg-white p-2 hover:bg-slate-50">
+        <div className="flex justify-center rounded-md border bg-white p-2 hover:bg-primary/90 dark:text-black">
           <EllipsisVertical />
         </div>
       </DropdownMenuTrigger>

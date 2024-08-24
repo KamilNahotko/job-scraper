@@ -1,13 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  Home,
-  LineChart,
-  Settings,
-  BriefcaseBusiness,
-  CalendarDays,
-} from "lucide-react";
+import { Home, LineChart, BriefcaseBusiness, CalendarDays } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -16,6 +10,7 @@ import {
 } from "@/components/ui/tooltip";
 import { APP_URL } from "@/consts";
 import { usePathname } from "next/navigation";
+import { ModeToggle } from "./components";
 
 export const SideNavigation = () => {
   const pathname = usePathname();
@@ -91,20 +86,7 @@ export const SideNavigation = () => {
       </nav>
 
       <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Link
-                href="#"
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-              >
-                <Settings className="h-5 w-5" />
-                <span className="sr-only">Settings</span>
-              </Link>
-            </TooltipTrigger>
-            <TooltipContent side="right">Settings</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <ModeToggle />
       </nav>
     </aside>
   );

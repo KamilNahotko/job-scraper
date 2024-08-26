@@ -38,7 +38,7 @@ export const ScraperLoading = ({
   }, [isLoading]);
 
   return (
-    <div className="flex flex-col items-center justify-center rounded-md bg-gray-100 p-4">
+    <div className="flex flex-col items-center justify-center rounded-md bg-gray-100 p-4 dark:bg-gray-950">
       <div className="py-3">
         {isError ? (
           <div>
@@ -50,7 +50,7 @@ export const ScraperLoading = ({
           </div>
         )}
       </div>
-      <div className="mb-4 text-2xl">
+      <div className="mb-4 text-2xl dark:text-white">
         {isLoading && "Scraping page is progress"}
         {isSuccess && "Scraping completed!"}
         {isError && "Something went wrong. Try again."}

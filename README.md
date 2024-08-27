@@ -1,36 +1,19 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Job Offer Scraper
 
-## Getting Started
+Welcome to the Job Offer Scraper, a powerful tool that allows users to create an account, submit job offer URLs, and automatically extract and store the most important details of job offers. This app uses **Puppeteer** for web scraping and **OpenAI** for extracting key information from HTML content.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **User Accounts**: Securely create and manage your own account.
+- **Job Offer Submission**: Submit job offer URLs, and the app will automatically scrape and store the most relevant details.
+- **Data Extraction**: Uses OpenAI to extract the most important information from job listings.
+- **Dashboard**: View and manage your scraped job offers in a user-friendly dashboard.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tech Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- **Next.js**: Frontend framework for building the user interface.
+- **Puppeteer**: A headless browser tool for scraping job offer details.
+- **OpenAI**: AI service used to parse and extract important job offer information from raw HTML.
+- **Firebase**: Used for authentication and database services.
+- **Tailwind CSS**: For styling and UI components.
+- **Clerk**: For user authentication and account management.

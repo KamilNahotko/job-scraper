@@ -61,7 +61,10 @@ export const AddJobOfferForm = ({ userId }: { userId: string }) => {
 
   return (
     <>
-      <Dialog open={isAddingJobToListing}>
+      <Dialog
+        open={isAddingJobToListing}
+        onOpenChange={setIsAddingJobToListing}
+      >
         <DialogContent
           className="max-w-[525px] p-2"
           isShowCloseButton={isError}

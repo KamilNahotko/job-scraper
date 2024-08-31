@@ -16,7 +16,11 @@ const ListingPage = () => {
 
   return (
     <div className="mt-10">
-      <JobListing userId={userData.user.uid} isShowPagination />
+      <JobListing
+        userId={userData.user.uid}
+        isShowPagination
+        defaultRowsPerPage="10"
+      />
     </div>
   );
 };

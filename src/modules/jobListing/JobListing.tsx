@@ -34,9 +34,11 @@ import { getStatusLabel } from "../forms/JobOfferForm/JobOfferForm.utils";
 export const JobListing = ({
   userId,
   isShowPagination = false,
+  defaultRowsPerPage = "5",
 }: {
   userId: string;
   isShowPagination?: boolean;
+  defaultRowsPerPage?: "5" | "10";
 }) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -45,7 +47,7 @@ export const JobListing = ({
   const [firstDoc, setFirstDoc] = useState<DocumentSnapshot>();
   const [lastDoc, setLastDoc] = useState<DocumentSnapshot>();
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState("5");
+  const [rowsPerPage, setRowsPerPage] = useState<string>(defaultRowsPerPage);
   const limitPerPage = Number(rowsPerPage);
 
   const { data: jobListingData, isLoading: isLoadingJobListing } =

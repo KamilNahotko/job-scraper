@@ -7,12 +7,12 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useJobListingStore } from "@/store";
-import { FilePlus } from "lucide-react";
+import { ClipboardPaste, FilePlus } from "lucide-react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { ScraperLoading } from "./components";
 
 export const AddJobOfferForm = ({ userId }: { userId: string }) => {
-  const { register, handleSubmit } = useForm<IAddJobOfferForm>();
+  const { register, handleSubmit, setValue } = useForm<IAddJobOfferForm>();
 
   const { setIsAddingJobToListing, isAddingJobToListing } = useJobListingStore(
     (state) => ({
@@ -59,6 +59,12 @@ export const AddJobOfferForm = ({ userId }: { userId: string }) => {
     });
   };
 
+  const handlePaste = () => {
+    navigator.clipboard.readText().then((text) => {
+      setValue("jobOfferUrl", text);
+    });
+  };
+
   return (
     <>
       <Dialog
@@ -101,9 +107,21 @@ export const AddJobOfferForm = ({ userId }: { userId: string }) => {
                       {...register("jobOfferUrl")}
                     />
                   </div>
-                  <div className="flex-[0_0_auto]">
-                    <Button size={"icon"} disabled={isAddingJobToListing}>
+                  <div className="flex gap-2">
+                    <Button
+                      type="submit"
+                      size={"icon"}
+                      disabled={isAddingJobToListing}
+                    >
                       <FilePlus />
+                    </Button>
+                    <Button
+                      type="button"
+                      size={"icon"}
+                      disabled={isAddingJobToListing}
+                      onClick={handlePaste}
+                    >
+                      <ClipboardPaste />
                     </Button>
                   </div>
                 </div>
